@@ -18,6 +18,10 @@ namespace KeyChanger
 			get { return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version; }
 		}
 
+		public override string UpdateURL
+		{
+			get { return "https://dl.dropboxusercontent.com/u/31979270/tshockplugins/keychanger-update.json?raw=true"; }
+		}
 
 		public override string Name
 		{
@@ -78,7 +82,7 @@ namespace KeyChanger
 			TSPlayer ply = args.Player;
 
 			// SSC check to alert users
-			if (!TShock.Config.ServerSideCharacter)
+			if (!Main.ServerSideCharacter)
 			{
 				ply.SendWarningMessage("[Warning] This plugin will not work properly with ServerSideCharacters disabled.");
 			}
@@ -118,32 +122,29 @@ namespace KeyChanger
 						Key key;
 						string str = args.Parameters[1].ToLower();
 
-                        if (str == Key.Temple.Name)
-                            key = Key.Temple;
-                        else if (str == Key.Jungle.Name)
-                            key = Key.Jungle;
-                        else if (str == Key.Corruption.Name)
-                            key = Key.Corruption;
-                        else if (str == Key.Crimson.Name)
-                            key = Key.Crimson;
-                        else if (str == Key.Hallowed.Name)
-                            key = Key.Hallowed;
-                        else if (str == Key.Frozen.Name)
-                            key = Key.Frozen;
-                        else if (str == Key.Shadow.Name)
-                            key = Key.Shadow;
-                        else
-                        {
-                            ply.SendErrorMessage("Invalid key type! Available types: " + string.Join(", ",
-                                Key.Temple.Enabled ? Key.Temple.Name : null,
-                                Key.Jungle.Enabled ? Key.Jungle.Name : null,
-                                Key.Corruption.Enabled ? Key.Corruption.Name : null,
-                                Key.Crimson.Enabled ? Key.Crimson.Name : null,
-                                Key.Hallowed.Enabled ? Key.Hallowed.Name : null,
-                                Key.Frozen.Enabled ? Key.Frozen.Name : null,
-                                Key.Shadow.Enabled ? Key.Shadow.Name : null));
-                            return;
-                        }
+						if (str == Key.Temple.Name)
+							key = Key.Temple;
+						else if (str == Key.Jungle.Name)
+							key = Key.Jungle;
+						else if (str == Key.Corruption.Name)
+							key = Key.Corruption;
+						else if (str == Key.Crimson.Name)
+							key = Key.Crimson;
+						else if (str == Key.Hallowed.Name)
+							key = Key.Hallowed;
+						else if (str == Key.Frozen.Name)
+							key = Key.Frozen;
+						else
+						{
+							ply.SendErrorMessage("Invalid key type! Available types: " + string.Join(", ",
+								Key.Temple.Enabled ? Key.Temple.Name : null,
+								Key.Jungle.Enabled ? Key.Jungle.Name : null,
+								Key.Corruption.Enabled ? Key.Corruption.Name : null,
+								Key.Crimson.Enabled ? Key.Crimson.Name : null,
+								Key.Hallowed.Enabled ? Key.Hallowed.Name : null,
+								Key.Frozen.Enabled ? Key.Frozen.Name : null));
+							return;
+						}
 
 						// Verifies whether the key has been enabled
 						if (!key.Enabled)
@@ -176,11 +177,7 @@ namespace KeyChanger
 							}
 
 							// Checks if the player is inside the region
-							int MinX = region.Area.X;
-							int MinY = region.Area.Y;
-							int MaxX = region.Area.X + region.Area.Width;
-							int MaxY = region.Area.Y + region.Area.Height;
-							if (ply.TileX < MinX || ply.TileX > MaxX || ply.TileY < MinY || ply.TileY > MaxY)
+							if (!region.Area.Contains(ply.TileX, ply.TileY))
 							{
 								ply.SendErrorMessage("You are not in a valid region to make this exchange.");
 								return;
@@ -242,7 +239,6 @@ namespace KeyChanger
 							ply.SendMessage("Crimson Key - " + string.Join(", ", Key.Crimson.Items.Select(i => i.name)), Color.Goldenrod);
 							ply.SendMessage("Hallowed Key - " + string.Join(", ", Key.Hallowed.Items.Select(i => i.name)), Color.Goldenrod);
 							ply.SendMessage("Frozen Key - " + string.Join(", ", Key.Frozen.Items.Select(i => i.name)), Color.Goldenrod);
-                            ply.SendMessage("Shadow Key - " + string.Join(", ", Key.Shadow.Items.Select(i => i.name)), Color.Goldenrod);
 							break;
 						}
 
